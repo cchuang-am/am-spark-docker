@@ -9,37 +9,41 @@ RUN set -ex && \
     apt-get update && \
     ln -s /lib /lib64 && \
     apt upgrade -y && \
-    apt install -y gnupg2 bash tini libc6 libpam-modules krb5-user libnss3 procps net-tools gosu \
-                   build-essential gdb lcov pkg-config curl \
-                   libbz2-dev libffi-dev libgdbm-dev libgdbm-compat-dev liblzma-dev \
-                   libncurses5-dev libreadline6-dev libsqlite3-dev libssl-dev \
-                   lzma lzma-dev tk-dev uuid-dev zlib1g-dev wget dnsutils \
-                   r-base r-base-dev apt-transport-https ca-certificates
+    apt install -y gnupg2 wget bash tini libc6 libpam-modules krb5-user libnss3 procps net-tools gosu \
+                   r-base r-base-dev
+
+    # apt install -y gnupg2 wget bash tini libc6 libpam-modules krb5-user libnss3 procps net-tools gosu \
+    #                build-essential gdb lcov pkg-config curl \
+    #                libbz2-dev libffi-dev libgdbm-dev libgdbm-compat-dev liblzma-dev \
+    #                libncurses5-dev libreadline6-dev libsqlite3-dev libssl-dev \
+    #                lzma lzma-dev tk-dev uuid-dev zlib1g-dev dnsutils \
+    #                r-base r-base-dev apt-transport-https ca-certificates
 
 # Install Python 3.10.5
-RUN wget https://www.python.org/ftp/python/3.10.5/Python-3.10.5.tgz && \
-    tar -xvf Python-3.10.5.tgz && \
-    cd Python-3.10.5 && \
-    ./configure --enable-optimizations --enable-profiling --with-lto --with-threads && \
-    make -j $(nproc) && \
-    make altinstall && \
-    cd .. && \
-    rm -rf Python-3.10.5 && \
-    rm Python-3.10.5.tgz
+# RUN wget https://www.python.org/ftp/python/3.10.5/Python-3.10.5.tgz && \
+#     tar -xvf Python-3.10.5.tgz && \
+#     cd Python-3.10.5 && \
+#     ./configure --enable-optimizations --enable-profiling --with-lto --with-threads && \
+#     make -j $(nproc) && \
+#     make altinstall && \
+#     cd .. && \
+#     rm -rf Python-3.10.5 && \
+#     rm Python-3.10.5.tgz
 
-RUN ln -s /usr/local/bin/python3.10 /usr/local/bin/python3 && \
-    ln -s /usr/local/bin/python3.10 /usr/local/bin/python && \
-    ln -s /usr/local/bin/pip3.10 /usr/local/bin/pip3 && \
-    ln -s /usr/local/bin/pip3.10 /usr/local/bin/pip
+# RUN ln -s /usr/local/bin/python3.10 /usr/local/bin/python3 && \
+#     ln -s /usr/local/bin/python3.10 /usr/local/bin/python && \
+#     ln -s /usr/local/bin/pip3.10 /usr/local/bin/pip3 && \
+#     ln -s /usr/local/bin/pip3.10 /usr/local/bin/pip
 
-RUN pip install --upgrade pip && \
-    pip install --upgrade setuptools
+# RUN pip install --no-cache-dir --upgrade pip && \
+#     pip install --no-cache-dir --upgrade setuptools
 
 # Install Java 11
-RUN curl -s https://repos.azul.com/azul-repo.key | gpg --dearmor -o /usr/share/keyrings/azul.gpg && \
+RUN apt install -y ca-certificates curl && \
+    curl -s https://repos.azul.com/azul-repo.key | gpg --dearmor -o /usr/share/keyrings/azul.gpg && \
     echo "deb [signed-by=/usr/share/keyrings/azul.gpg] https://repos.azul.com/zulu/deb stable main" | tee /etc/apt/sources.list.d/zulu.list && \
-    apt-get update && \
-    apt-get install -y zulu-11
+    apt update && \
+    apt install -y zulu-11
 
 #  clean up
 RUN apt-get clean && \
