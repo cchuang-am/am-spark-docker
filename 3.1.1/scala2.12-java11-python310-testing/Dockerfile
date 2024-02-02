@@ -10,7 +10,30 @@ RUN set -ex && \
     ln -s /lib /lib64 && \
     apt upgrade -y && \
     apt install -y gnupg2 wget bash tini libc6 libpam-modules krb5-user libnss3 procps net-tools gosu \
-                   r-base r-base-dev
+                   build-essential gdb lcov pkg-config curl \
+                   libbz2-dev libffi-dev libgdbm-dev libgdbm-compat-dev liblzma-dev \
+                   libncurses5-dev libreadline6-dev libsqlite3-dev libssl-dev \
+                   lzma lzma-dev tk-dev uuid-dev zlib1g-dev dnsutils \
+                   r-base r-base-dev apt-transport-https ca-certificates
+
+# Install Python 3.10.5
+RUN wget https://www.python.org/ftp/python/3.10.5/Python-3.10.5.tgz && \
+    tar -xvf Python-3.10.5.tgz && \
+    cd Python-3.10.5 && \
+    ./configure --enable-optimizations --enable-profiling --with-lto --with-threads && \
+    make -j $(nproc) && \
+    make altinstall && \
+    cd .. && \
+    rm -rf Python-3.10.5 && \
+    rm Python-3.10.5.tgz
+
+RUN ln -s /usr/local/bin/python3.10 /usr/local/bin/python3 && \
+    ln -s /usr/local/bin/python3.10 /usr/local/bin/python && \
+    ln -s /usr/local/bin/pip3.10 /usr/local/bin/pip3 && \
+    ln -s /usr/local/bin/pip3.10 /usr/local/bin/pip
+
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir --upgrade setuptools
 
 # Install Java 11
 RUN apt install -y ca-certificates curl && \
